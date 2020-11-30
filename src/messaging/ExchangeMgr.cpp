@@ -75,7 +75,6 @@ CHIP_ERROR ExchangeManager::Init(SecureSessionMgr * sessionMgr)
     mContextsInUse = 0;
 
     memset(UMHandlerPool, 0, sizeof(UMHandlerPool));
-    OnExchangeContextChanged = nullptr;
 
     sessionMgr->SetDelegate(this);
 
@@ -91,8 +90,6 @@ CHIP_ERROR ExchangeManager::Shutdown()
         mSessionMgr->SetDelegate(nullptr);
         mSessionMgr = nullptr;
     }
-
-    OnExchangeContextChanged = nullptr;
 
     mState = State::kState_NotInitialized;
 
@@ -122,6 +119,12 @@ CHIP_ERROR ExchangeManager::UnregisterUnsolicitedMessageHandler(uint32_t protoco
 CHIP_ERROR ExchangeManager::UnregisterUnsolicitedMessageHandler(uint32_t protocolId, uint8_t msgType)
 {
     return UnregisterUMH(protocolId, static_cast<int16_t>(msgType));
+}
+
+ExchangeContext * ExchangeManager::NewExchange(ChannelHandle &)
+{
+    // TODO: not implemented
+    return nullptr;
 }
 
 void ExchangeManager::OnReceiveError(CHIP_ERROR error, const Transport::PeerAddress & source, SecureSessionMgr * msgLayer)
@@ -264,11 +267,54 @@ CHIP_ERROR ExchangeManager::UnregisterUMH(uint32_t protocolId, int16_t msgType)
     return CHIP_ERROR_NO_UNSOLICITED_MESSAGE_HANDLER;
 }
 
+ChannelHandle ExchangeManager::EstablishChannel(const ChannelBuilder & builder, ChannelDelegate * delegate)
+{
+    ChannelContext * channelContext = nullptr;
+
+    // Find an existing Channel matching the builder
+    mChannelContexts.ForEachActiveObject([&](ChannelContext* context) {
+        if (context->MatchesBuilder(builder, mSessionMgr))
+        {
+            channelContext = context;
+            return false;
+        }
+        return true;
+    });
+
+    if (channelContext == nullptr)
+    {
+        // create a new channel if not found
+        channelContext = mChannelContexts.CreateObject(this);
+        if (channelContext == nullptr) return ChannelHandle{nullptr};
+        channelContext->Start(builder);
+    }
+    else
+    {
+        channelContext->Retain();
+    }
+
+    auto association = mChannelHandles.CreateObject(this, channelContext, delegate);
+    channelContext->Release();
+    return ChannelHandle{association};
+}
+
 void ExchangeManager::OnMessageReceived(const PacketHeader & packetHeader, const PayloadHeader & payloadHeader,
                                         SecureSessionHandle session, System::PacketBufferHandle msgBuf,
                                         SecureSessionMgr * msgLayer)
 {
     DispatchMessage(session, packetHeader, payloadHeader, std::move(msgBuf));
+}
+
+void ExchangeManager::OnNewConnection(SecureSessionHandle session, SecureSessionMgr * mgr)
+{
+    mChannelContexts.ForEachActiveObject([&](ChannelContext* context) {
+        if (context->MatchesSession(session, mgr))
+        {
+            context->OnNewConnection(session);
+            return false;
+        }
+        return true;
+    });
 }
 
 void ExchangeManager::OnConnectionExpired(SecureSessionHandle session, SecureSessionMgr * mgr)
@@ -281,6 +327,15 @@ void ExchangeManager::OnConnectionExpired(SecureSessionHandle session, SecureSes
             // Continue iterate because there can be multiple contexts associated with the connection.
         }
     }
+
+    mChannelContexts.ForEachActiveObject([&](ChannelContext* context) {
+        if (!context->MatchesSession(session, mgr))
+        {
+            context->OnConnectionExpired(session);
+            return false;
+        }
+        return true;
+    });
 }
 
 void ExchangeManager::IncrementContextsInUse()

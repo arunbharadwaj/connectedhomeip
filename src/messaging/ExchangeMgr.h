@@ -26,8 +26,11 @@
 
 #include <array>
 
+#include <messaging/Channel.h>
+#include <messaging/ChannelContext.h>
 #include <messaging/ExchangeContext.h>
 #include <support/DLLUtil.h>
+#include <support/Pool.h>
 #include <transport/SecureSessionMgr.h>
 
 namespace chip {
@@ -160,6 +163,30 @@ public:
      */
     CHIP_ERROR UnregisterUnsolicitedMessageHandler(uint32_t protocolId, uint8_t msgType);
 
+    // Channel public APIs
+    ExchangeContext * NewExchange(ChannelHandle & channel);
+    ChannelHandle EstablishChannel(const ChannelBuilder & builder, ChannelDelegate * delegate);
+
+    // Internal APIs used for channel
+    void ReleaseChannelContext(ChannelContext * channel)
+    {
+        mChannelContexts.ReleaseObject(channel);
+    }
+
+    void ReleaseChannelHandle(ChannelContextHandleAssociation * association)
+    {
+        mChannelHandles.ReleaseObject(association);
+    }
+
+    template<typename Event>
+    void NotifyChannelEvent(ChannelContext * channel, Event event)
+    {
+        mChannelHandles.ForEachActiveObject([&](ChannelContextHandleAssociation * association) {
+            if (association->mChannelContext == channel) event(association->mChannelDelegate);
+            return true;
+        });
+    }
+
     void IncrementContextsInUse();
     void DecrementContextsInUse();
 
@@ -189,7 +216,8 @@ private:
     size_t mContextsInUse;
 
     UnsolicitedMessageHandler UMHandlerPool[CHIP_CONFIG_MAX_UNSOLICITED_MESSAGE_HANDLERS];
-    void (*OnExchangeContextChanged)(size_t numContextsInUse);
+    BitMapObjectPool<ChannelContext, CHIP_CONFIG_MAX_ACTIVE_CHANNELS> mChannelContexts;
+    BitMapObjectPool<ChannelContextHandleAssociation, CHIP_CONFIG_MAX_CHANNEL_HANDLES> mChannelHandles;
 
     ExchangeContext * AllocContext(uint16_t ExchangeId, SecureSessionHandle session, bool Initiator, ExchangeDelegate * delegate);
 
@@ -204,6 +232,7 @@ private:
                            SecureSessionHandle session, System::PacketBufferHandle msgBuf,
                            SecureSessionMgr * msgLayer) override;
 
+    void OnNewConnection(SecureSessionHandle session, SecureSessionMgr * mgr) override;
     void OnConnectionExpired(SecureSessionHandle session, SecureSessionMgr * mgr) override;
 };
 
