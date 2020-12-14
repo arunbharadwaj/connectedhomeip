@@ -168,21 +168,16 @@ public:
     ChannelHandle EstablishChannel(const ChannelBuilder & builder, ChannelDelegate * delegate);
 
     // Internal APIs used for channel
-    void ReleaseChannelContext(ChannelContext * channel)
-    {
-        mChannelContexts.ReleaseObject(channel);
-    }
+    void ReleaseChannelContext(ChannelContext * channel) { mChannelContexts.ReleaseObject(channel); }
 
-    void ReleaseChannelHandle(ChannelContextHandleAssociation * association)
-    {
-        mChannelHandles.ReleaseObject(association);
-    }
+    void ReleaseChannelHandle(ChannelContextHandleAssociation * association) { mChannelHandles.ReleaseObject(association); }
 
-    template<typename Event>
+    template <typename Event>
     void NotifyChannelEvent(ChannelContext * channel, Event event)
     {
         mChannelHandles.ForEachActiveObject([&](ChannelContextHandleAssociation * association) {
-            if (association->mChannelContext == channel) event(association->mChannelDelegate);
+            if (association->mChannelContext == channel)
+                event(association->mChannelDelegate);
             return true;
         });
     }
@@ -221,16 +216,16 @@ private:
 
     ExchangeContext * AllocContext(uint16_t ExchangeId, SecureSessionHandle session, bool Initiator, ExchangeDelegate * delegate);
 
-    void DispatchMessage(SecureSessionHandle session, const PacketHeader & packetHeader, const PayloadHeader & payloadHeader, System::PacketBufferHandle msgBuf);
+    void DispatchMessage(SecureSessionHandle session, const PacketHeader & packetHeader, const PayloadHeader & payloadHeader,
+                         System::PacketBufferHandle msgBuf);
 
     CHIP_ERROR RegisterUMH(uint32_t protocolId, int16_t msgType, ExchangeDelegate * delegate);
     CHIP_ERROR UnregisterUMH(uint32_t protocolId, int16_t msgType);
 
     void OnReceiveError(CHIP_ERROR error, const Transport::PeerAddress & source, SecureSessionMgr * msgLayer) override;
 
-    void OnMessageReceived(const PacketHeader & packetHeader, const PayloadHeader & payloadHeader,
-                           SecureSessionHandle session, System::PacketBufferHandle msgBuf,
-                           SecureSessionMgr * msgLayer) override;
+    void OnMessageReceived(const PacketHeader & packetHeader, const PayloadHeader & payloadHeader, SecureSessionHandle session,
+                           System::PacketBufferHandle msgBuf, SecureSessionMgr * msgLayer) override;
 
     void OnNewConnection(SecureSessionHandle session, SecureSessionMgr * mgr) override;
     void OnConnectionExpired(SecureSessionHandle session, SecureSessionMgr * mgr) override;

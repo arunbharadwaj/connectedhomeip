@@ -43,7 +43,8 @@ public:
 class ChannelContext : public ReferenceCounted<ChannelContext, ChannelContextDeletor>
 {
 public:
-    ChannelContext(ExchangeManager * exchangeManager) : mState(ChannelState::kChanneState_Closed), mExchangeManager(exchangeManager) {}
+    ChannelContext(ExchangeManager * exchangeManager) : mState(ChannelState::kChanneState_Closed), mExchangeManager(exchangeManager)
+    {}
 
     void Start(const ChannelBuilder & builder);
     ExchangeContext * NewExchange(ExchangeDelegate * delegate);
@@ -59,24 +60,29 @@ public:
     // events of SecureSessionManager, propagated from ExchangeManager
     void OnNewConnection(SecureSessionHandle session);
     void OnConnectionExpired(SecureSessionHandle session);
+
 private:
     friend class ChannelContextDeletor;
     ChannelState mState = ChannelState::kChanneState_Closed;
     ExchangeManager * mExchangeManager;
 
-    enum PrepareState {
+    enum PrepareState
+    {
         kPrepareState_WaitingForInterface,
         kPrepareState_AddressResolving,
         kPrepareState_SessionEstablishing,
     };
 
-    union {
-        struct {
+    union
+    {
+        struct
+        {
             PrepareState mState;
             NodeId mPeerNodeId;
             uint16_t mPeerKeyId;
         } mPreparing;
-        struct {
+        struct
+        {
             SecureSessionHandle mSession;
         } mReady;
     };
@@ -84,10 +90,13 @@ private:
 
 struct ChannelContextHandleAssociation
 {
-    ChannelContextHandleAssociation(ExchangeManager * exchangeManager, ChannelContext * channelContext, ChannelDelegate * channelDelegate) :
-        mExchangeManager(exchangeManager), mChannelContext(channelContext), mChannelDelegate(channelDelegate) {
-            mChannelContext->Retain();
-        }
+    ChannelContextHandleAssociation(ExchangeManager * exchangeManager, ChannelContext * channelContext,
+                                    ChannelDelegate * channelDelegate) :
+        mExchangeManager(exchangeManager),
+        mChannelContext(channelContext), mChannelDelegate(channelDelegate)
+    {
+        mChannelContext->Retain();
+    }
     ~ChannelContextHandleAssociation() { mChannelContext->Release(); }
 
     void Release();

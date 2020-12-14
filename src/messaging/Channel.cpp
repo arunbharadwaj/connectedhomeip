@@ -40,7 +40,8 @@ ExchangeContext * ChannelHandle::NewExchange(ExchangeDelegate * delegate)
 
 void ChannelHandle::Release()
 {
-    if (mAssociation != nullptr) mAssociation->Release();
+    if (mAssociation != nullptr)
+        mAssociation->Release();
     mAssociation = nullptr;
 }
 
