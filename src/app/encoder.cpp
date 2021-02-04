@@ -165,6 +165,8 @@ uint16_t encodeApsFrame(uint8_t * buffer, uint16_t buf_length, EmberApsFrame * a
 #define ZCL_STEP_SATURATION_COMMAND_ID (0x05)
 #define ZCL_STOP_MOVE_STEP_COMMAND_ID (0x47)
 
+#define DESCRIPTOR_CLUSTER_ID 0xF002
+
 #define DOOR_LOCK_CLUSTER_ID 0x0101
 #define ZCL_CLEAR_ALL_PINS_COMMAND_ID (0x08)
 #define ZCL_CLEAR_ALL_RFIDS_COMMAND_ID (0x19)
@@ -1562,6 +1564,52 @@ PacketBufferHandle encodeColorControlClusterReadClusterRevisionAttribute(Endpoin
 {
     COMMAND_HEADER("ReadColorControlClusterRevision", COLOR_CONTROL_CLUSTER_ID);
     buf.Put8(kFrameControlGlobalCommand).Put8(kSeqNum).Put8(ZCL_READ_ATTRIBUTES_COMMAND_ID).Put16(0xFFFD);
+    COMMAND_FOOTER();
+}
+
+/*----------------------------------------------------------------------------*\
+| Cluster Descriptor                                                  | 0xF002 |
+|------------------------------------------------------------------------------|
+| Responses:                                                          |        |
+|                                                                     |        |
+|------------------------------------------------------------------------------|
+| Commands:                                                           |        |
+|                                                                     |        |
+|------------------------------------------------------------------------------|
+| Attributes:                                                         |        |
+| * Device                                                            | 0x0001 |
+| * Server                                                            | 0x0002 |
+| * Client                                                            | 0x0003 |
+| * Parts                                                             | 0x0004 |
+\*----------------------------------------------------------------------------*/
+
+/*
+ * Attribute Server
+ */
+PacketBufferHandle encodeDescriptorClusterReadServerAttribute(EndpointId destinationEndpoint)
+{
+    COMMAND_HEADER("ReadDescriptorServer", DESCRIPTOR_CLUSTER_ID);
+    buf.Put8(kFrameControlGlobalCommand).Put8(kSeqNum).Put8(ZCL_READ_ATTRIBUTES_COMMAND_ID).Put16(0x0001);
+    COMMAND_FOOTER();
+}
+
+/*
+ * Attribute Client
+ */
+PacketBufferHandle encodeDescriptorClusterReadClientAttribute(EndpointId destinationEndpoint)
+{
+    COMMAND_HEADER("ReadDescriptorClient", DESCRIPTOR_CLUSTER_ID);
+    buf.Put8(kFrameControlGlobalCommand).Put8(kSeqNum).Put8(ZCL_READ_ATTRIBUTES_COMMAND_ID).Put16(0x0002);
+    COMMAND_FOOTER();
+}
+
+/*
+ * Attribute Server
+ */
+PacketBufferHandle encodeDescriptorClusterReadPartsAttribute(EndpointId destinationEndpoint)
+{
+    COMMAND_HEADER("ReadDescriptorParts", DESCRIPTOR_CLUSTER_ID);
+    buf.Put8(kFrameControlGlobalCommand).Put8(kSeqNum).Put8(ZCL_READ_ATTRIBUTES_COMMAND_ID).Put16(0x0003);
     COMMAND_FOOTER();
 }
 
