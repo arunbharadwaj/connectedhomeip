@@ -894,6 +894,7 @@ public:
 constexpr uint16_t kBarrierControlClusterId  = 0x0103;
 constexpr uint16_t kBasicClusterId           = 0x0000;
 constexpr uint16_t kColorControlClusterId    = 0x0300;
+constexpr uint16_t kDescriptorClusterId      = 0xF002;
 constexpr uint16_t kDoorLockClusterId        = 0x0101;
 constexpr uint16_t kGroupsClusterId          = 0x0004;
 constexpr uint16_t kIasZoneClusterId         = 0x0500;
@@ -2837,6 +2838,88 @@ public:
     {
         return encodeColorControlClusterReadStartUpColorTemperatureMiredsAttribute(endPointId);
     }
+
+    // Global Response: ReadAttributesResponse
+    bool HandleGlobalResponse(uint8_t commandId, uint8_t * message, uint16_t messageLen) const override
+    {
+        ReadAttributesResponse response;
+        return response.HandleCommandResponse(commandId, message, messageLen);
+    }
+};
+
+/*----------------------------------------------------------------------------*\
+| Cluster Descriptor                                                  | 0xF002 |
+|------------------------------------------------------------------------------|
+| Responses:                                                          |        |
+|                                                                     |        |
+|------------------------------------------------------------------------------|
+| Commands:                                                           |        |
+|                                                                     |        |
+|------------------------------------------------------------------------------|
+| Attributes:                                                         |        |
+| * Device                                                            | 0x0001 |
+| * Server                                                            | 0x0002 |
+| * Client                                                            | 0x0003 |
+| * Parts                                                             | 0x0004 |
+\*----------------------------------------------------------------------------*/
+
+/*
+ * Attribute Server
+ */
+class ReadDescriptorServer : public ModelCommand
+{
+public:
+    ReadDescriptorServer() : ModelCommand("read", kDescriptorClusterId, 0x00)
+    {
+        AddArgument("attr-name", "server");
+        ModelCommand::AddArguments();
+    }
+
+    PacketBufferHandle EncodeCommand(uint8_t endPointId) override { return encodeDescriptorClusterReadServerAttribute(endPointId); }
+
+    // Global Response: ReadAttributesResponse
+    bool HandleGlobalResponse(uint8_t commandId, uint8_t * message, uint16_t messageLen) const override
+    {
+        ReadAttributesResponse response;
+        return response.HandleCommandResponse(commandId, message, messageLen);
+    }
+};
+
+/*
+ * Attribute Client
+ */
+class ReadDescriptorClient : public ModelCommand
+{
+public:
+    ReadDescriptorClient() : ModelCommand("read", kDescriptorClusterId, 0x00)
+    {
+        AddArgument("attr-name", "client");
+        ModelCommand::AddArguments();
+    }
+
+    PacketBufferHandle EncodeCommand(uint8_t endPointId) override { return encodeDescriptorClusterReadClientAttribute(endPointId); }
+
+    // Global Response: ReadAttributesResponse
+    bool HandleGlobalResponse(uint8_t commandId, uint8_t * message, uint16_t messageLen) const override
+    {
+        ReadAttributesResponse response;
+        return response.HandleCommandResponse(commandId, message, messageLen);
+    }
+};
+
+/*
+ * Attribute Parts
+ */
+class ReadDescriptorParts : public ModelCommand
+{
+public:
+    ReadDescriptorParts() : ModelCommand("read", kDescriptorClusterId, 0x00)
+    {
+        AddArgument("attr-name", "parts");
+        ModelCommand::AddArguments();
+    }
+
+    PacketBufferHandle EncodeCommand(uint8_t endPointId) override { return encodeDescriptorClusterReadPartsAttribute(endPointId); }
 
     // Global Response: ReadAttributesResponse
     bool HandleGlobalResponse(uint8_t commandId, uint8_t * message, uint16_t messageLen) const override
@@ -6462,6 +6545,19 @@ void registerClusterColorControl(Commands & commands)
     commands.Register(clusterName, clusterCommands);
 }
 
+void registerClusterDescriptor(Commands & commands)
+{
+    const char * clusterName = "Descriptor";
+
+    commands_list clusterCommands = {
+        make_unique<ReadDescriptorServer>(),
+        make_unique<ReadDescriptorClient>(),
+        make_unique<ReadDescriptorParts>(),
+    };
+
+    commands.Register(clusterName, clusterCommands);
+}
+
 void registerClusterDoorLock(Commands & commands)
 {
     const char * clusterName = "DoorLock";
@@ -6607,6 +6703,7 @@ void registerClusters(Commands & commands)
     registerClusterBarrierControl(commands);
     registerClusterBasic(commands);
     registerClusterColorControl(commands);
+    registerClusterDescriptor(commands);
     registerClusterDoorLock(commands);
     registerClusterGroups(commands);
     registerClusterIasZone(commands);

@@ -829,6 +829,31 @@ encodeColorControlClusterWriteStartUpColorTemperatureMiredsAttribute(chip::Endpo
  */
 chip::System::PacketBufferHandle encodeColorControlClusterReadClusterRevisionAttribute(chip::EndpointId destinationEndpoint);
 
+
+/*----------------------------------------------------------------------------*\
+| Cluster Descriptor                                                  | 0xF002 |
+|------------------------------------------------------------------------------|
+| Responses:                                                          |        |
+|                                                                     |        |
+|------------------------------------------------------------------------------|
+| Commands:                                                           |        |
+|                                                                     |        |
+|------------------------------------------------------------------------------|
+| Attributes:                                                         |        |
+| * Device                                                            | 0x0001 |
+| * Server                                                            | 0x0002 |
+| * Client                                                            | 0x0003 |
+| * Parts                                                             | 0x0004 |
+\*----------------------------------------------------------------------------*/
+// chip::System::PacketBufferHandle encodeDescriptorClusterReadDeviceAttribute(chip::EndpointId destinationEndpoint);
+
+chip::System::PacketBufferHandle encodeDescriptorClusterReadServerAttribute(chip::EndpointId destinationEndpoint);
+
+chip::System::PacketBufferHandle encodeDescriptorClusterReadClientAttribute(chip::EndpointId destinationEndpoint);
+
+chip::System::PacketBufferHandle encodeDescriptorClusterReadPartsAttribute(chip::EndpointId destinationEndpoint);
+
+
 /*----------------------------------------------------------------------------*\
 | Cluster DoorLock                                                    | 0x0101 |
 |------------------------------------------------------------------------------|
