@@ -20,5 +20,10 @@ limitations under the License.
     <type id="0xF3" name="group_id" size="2" description="Group Id" discrete="true" />
     <type id="0xF4" name="command_id" size="1" description="Command Id" discrete="true" />
     <type id="0xF5" name="node_id" size="8" description="Node Id" discrete="true" />
+    <type id="0xF6" name="device_type_id" size="16" description="Device Type Id" discrete="true" />
   </atomic>
+  <struct name="Device_Type" length="32">
+    <item name="type" type="device_type_id"/>
+    <item name="revision" type="INT16U"/>
+  </struct>
 </configurator>

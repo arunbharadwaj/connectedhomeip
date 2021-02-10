@@ -4064,6 +4064,16 @@
 
 // Server attributes
 
+// Attribute ids for cluster: Descriptor
+
+// Client attributes
+
+// Server attributes
+#define ZCL_DEVICE_ATTRIBUTE_ID (0x0000)
+#define ZCL_SERVER_ATTRIBUTE_ID (0x0001)
+#define ZCL_CLIENT_ATTRIBUTE_ID (0x0002)
+#define ZCL_PARTS_ATTRIBUTE_ID (0x0003)
+
 // Attribute ids for cluster: Sample Mfg Specific Cluster
 
 // Client attributes
@@ -4119,3 +4129,4 @@
 #define ZCL_SL_PENDING_NETWORK_UPDATE_CHANNEL_ATTRIBUTE_ID (0x0011)
 #define ZCL_SL_PENDING_NETWORK_UPDATE_PANID_ATTRIBUTE_ID (0x0012)
 #define ZCL_SL_OTA_MAX_OFFLINE_DURATION_ATTRIBUTE_ID (0x0013)
+

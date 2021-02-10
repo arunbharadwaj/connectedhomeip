@@ -26,24 +26,21 @@
 /**** Network Section ****/
 #define EMBER_SUPPORTED_NETWORKS (1)
 
+
 #define EMBER_APS_UNICAST_MESSAGE_COUNT 10
 
 /**** Cluster endpoint counts ****/
-#define EMBER_AF_LEVEL_CONTROL_CLUSTER_SERVER_ENDPOINT_COUNT (3)
-#define EMBER_AF_ON_OFF_CLUSTER_SERVER_ENDPOINT_COUNT (3)
+#define EMBER_AF_BASIC_CLUSTER_SERVER_ENDPOINT_COUNT (1)
+#define EMBER_AF_DESCRIPTOR_CLUSTER_SERVER_ENDPOINT_COUNT (1)
 
 /**** Cluster Plugins ****/
 
-// Use this macro to check if the server side of the Level Control cluster is included
-#define ZCL_USING_LEVEL_CONTROL_CLUSTER_SERVER
-#define EMBER_AF_PLUGIN_LEVEL_CONTROL_SERVER
-#define EMBER_AF_PLUGIN_LEVEL_CONTROL
-// User options for server plugin Level Control
-#define EMBER_AF_PLUGIN_LEVEL_CONTROL_MAXIMUM_LEVEL 255
-#define EMBER_AF_PLUGIN_LEVEL_CONTROL_MINIMUM_LEVEL 0
-#define EMBER_AF_PLUGIN_LEVEL_CONTROL_RATE 0
+// Use this macro to check if the server side of the Basic cluster is included
+#define ZCL_USING_BASIC_CLUSTER_SERVER
+#define EMBER_AF_PLUGIN_BASIC_SERVER
+#define EMBER_AF_PLUGIN_BASIC
 
-// Use this macro to check if the server side of the On/off cluster is included
-#define ZCL_USING_ON_OFF_CLUSTER_SERVER
-#define EMBER_AF_PLUGIN_ON_OFF_SERVER
-#define EMBER_AF_PLUGIN_ON_OFF
+// Use this macro to check if the server side of the Descriptor cluster is included
+#define ZCL_USING_DESCRIPTOR_CLUSTER_SERVER
+#define EMBER_AF_PLUGIN_DESCRIPTOR_SERVER
+#define EMBER_AF_PLUGIN_DESCRIPTOR
