@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+Copyright (c) 2020 Project CHIP Authors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<configurator>
+  <domain name="CHIP"/>
+  <cluster>
+    <domain>General</domain>
+    <name>Descriptor</name>
+    <code>0xF002</code>
+    <define>DESCRIPTOR_CLUSTER</define>
+    <client init="false" tick="false">true</client>
+    <server init="false" tick="false">true</server>
+    <description>TODO</description>
+    <!-- Currently we do not have yet support for a struct attribute type. The device_type attribute here is a structure. Hence keeping a placeholder for it when it is enabled -->
+    <!-- <attribute side="server" code="0x0000" define="DEVICE" type="device_type" optional="false">Device</attribute> -->
+    <attribute side="server" code="0x0001" define="SERVER" type="Cluster_Id" min="0x0000" max="0xFFFF" writable="false" default="0x0000" optional="false">Server</attribute>
+    <attribute side="server" code="0x0002" define="CLIENT" type="Cluster_Id" min="0x0000" max="0xFFFF" writable="false" default="0x0000" optional="false">Client</attribute>
+    <attribute side="server" code="0x0003" define="PARTS" type="Endpoint_Id" min="0x0000" max="0xFFFF" writable="false" default="0x0000" optional="false">Parts</attribute>
+  </cluster>
+</configurator>
